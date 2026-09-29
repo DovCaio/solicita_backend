@@ -3,9 +3,11 @@ package com.solicita.service;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.solicita.dto.request.CreateRequestDTO;
+import com.solicita.dto.request.RequestFilterDTO;
 import com.solicita.dto.request.RequestResponseDTO;
 import com.solicita.dto.request.UpdateRequestDTO;
 import com.solicita.dto.request.UpdateRequestStatusDTO;
@@ -16,6 +18,7 @@ import com.solicita.exception.BusinessException;
 import com.solicita.exception.ResourceNotFoundException;
 import com.solicita.repository.RequestRepository;
 import com.solicita.repository.UserRepository;
+import com.solicita.repository.specification.RequestSpecification;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,9 +58,10 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Transactional(readOnly = true)
-    public List<RequestResponseDTO> findAll() {
+    public List<RequestResponseDTO> findAll(RequestFilterDTO filter) {
+        Specification<Request> specification = RequestSpecification.withFilters(filter);
 
-        return requestRepository.findAll()
+        return requestRepository.findAll(specification)
                 .stream()
                 .map(this::toResponse)
                 .toList();
