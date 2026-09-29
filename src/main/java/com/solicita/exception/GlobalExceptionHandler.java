@@ -9,29 +9,43 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(
-            ResourceNotFoundException exception) {
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleNotFound(
+                        ResourceNotFoundException exception) {
 
-        ErrorResponse response = new ErrorResponse(
-                exception.getMessage(),
-                Instant.now());
+                ErrorResponse response = new ErrorResponse(
+                                exception.getMessage(),
+                                Instant.now());
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(response);
-    }
+                return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .body(response);
+        }
 
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusiness(
-            BusinessException exception) {
+        @ExceptionHandler(BusinessException.class)
+        public ResponseEntity<ErrorResponse> handleBusiness(
+                        BusinessException exception) {
 
-        ErrorResponse response = new ErrorResponse(
-                exception.getMessage(),
-                Instant.now());
+                ErrorResponse response = new ErrorResponse(
+                                exception.getMessage(),
+                                Instant.now());
 
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(response);
-    }
+                return ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .body(response);
+        }
+
+        @ExceptionHandler(ToManyResourceRequisitionException.class)
+        public ResponseEntity<ErrorResponse> handleManyResources(
+                        ToManyResourceRequisitionException exception) {
+
+                ErrorResponse response = new ErrorResponse(
+                                exception.getMessage(),
+                                Instant.now());
+
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(response);
+        }
+
 }

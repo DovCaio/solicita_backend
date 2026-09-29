@@ -17,6 +17,7 @@ import com.solicita.entity.User;
 import com.solicita.enums.RequestStatus;
 import com.solicita.exception.BusinessException;
 import com.solicita.exception.ResourceNotFoundException;
+import com.solicita.exception.ToManyResourceRequisitionException;
 import com.solicita.repository.RequestRepository;
 import com.solicita.repository.UserRepository;
 import com.solicita.repository.specification.RequestSpecification;
@@ -65,6 +66,9 @@ public class RequestServiceImpl implements RequestService {
     @Transactional(readOnly = true)
     public List<RequestResponseDTO> findAll(RequestFilterDTO filter, int page, int size) {
         Specification<Request> specification = RequestSpecification.withFilters(filter);
+
+        if (size > 100)
+            throw new ToManyResourceRequisitionException("Muitas paginas foram requisitadas, no máximo 100.");
 
         Pageable pageable = PageRequest.of(page, size);
 
