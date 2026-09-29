@@ -12,6 +12,7 @@ import com.solicita.dto.request.UpdateRequestStatusDTO;
 import com.solicita.entity.Request;
 import com.solicita.entity.User;
 import com.solicita.enums.RequestStatus;
+import com.solicita.exception.BusinessException;
 import com.solicita.exception.ResourceNotFoundException;
 import com.solicita.repository.RequestRepository;
 import com.solicita.repository.UserRepository;
@@ -80,7 +81,7 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
         if (request.getStatus() != RequestStatus.ABERTO) {
-            throw new IllegalStateException(
+            throw new BusinessException(
                     "Somente solicitações abertas podem ser editadas");
         }
 
@@ -113,7 +114,7 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
         if (request.getStatus() != RequestStatus.ABERTO) {
-            throw new IllegalStateException(
+            throw new BusinessException(
                     "Somente solicitações abertas podem ser excluídas");
         }
 
