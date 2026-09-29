@@ -58,7 +58,9 @@ public class RequestController {
             @RequestParam(required = false) Category category,
             @RequestParam(required = false) RequestStatus status,
             @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate) {
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
         RequestFilterDTO filter = new RequestFilterDTO(
                 title,
@@ -68,7 +70,7 @@ public class RequestController {
                 endDate);
 
         return ResponseEntity.ok(
-                requestService.findAll(filter));
+                requestService.findAll(filter, page, size));
     }
 
     @GetMapping("/{id}")

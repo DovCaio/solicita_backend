@@ -3,6 +3,7 @@ package com.solicita.service;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,10 @@ import com.solicita.exception.ResourceNotFoundException;
 import com.solicita.repository.RequestRepository;
 import com.solicita.repository.UserRepository;
 import com.solicita.repository.specification.RequestSpecification;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,10 +63,12 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Transactional(readOnly = true)
-    public List<RequestResponseDTO> findAll(RequestFilterDTO filter) {
+    public List<RequestResponseDTO> findAll(RequestFilterDTO filter, int page, int size) {
         Specification<Request> specification = RequestSpecification.withFilters(filter);
 
-        return requestRepository.findAll(specification)
+        Pageable pageable = PageRequest.of(page, size);
+
+        return requestRepository.findAll(specification, pageable)
                 .stream()
                 .map(this::toResponse)
                 .toList();

@@ -14,7 +14,7 @@ public interface RequestService {
                         CreateRequestDTO dto,
                         String username);
 
-        public List<RequestResponseDTO> findAll(RequestFilterDTO filter);
+        public List<RequestResponseDTO> findAll(RequestFilterDTO filter, int page, int size);
 
         RequestResponseDTO findById(Long id);
 
