@@ -1,11 +1,13 @@
 package com.solicita.service;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.solicita.dto.dashboard.DashboardResponseDTO;
 import com.solicita.enums.RequestStatus;
 import com.solicita.repository.RequestRepository;
 
+@Service
 public class DashboardServiceImpl implements DashboardService {
 
     private final RequestRepository requestRepository;
