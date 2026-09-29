@@ -22,9 +22,7 @@ import com.solicita.repository.RequestRepository;
 import com.solicita.repository.UserRepository;
 import com.solicita.repository.specification.RequestSpecification;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,7 +66,7 @@ public class RequestServiceImpl implements RequestService {
         Specification<Request> specification = RequestSpecification.withFilters(filter);
 
         if (size > 100)
-            throw new ToManyResourceRequisitionException("Muitas paginas foram requisitadas, no máximo 100.");
+            throw new ToManyResourceRequisitionException("Muitas paginas foram requisitadas, no máximo 100");
 
         Pageable pageable = PageRequest.of(page, size);
 
