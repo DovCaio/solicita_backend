@@ -12,6 +12,7 @@ import com.solicita.dto.request.UpdateRequestStatusDTO;
 import com.solicita.entity.Request;
 import com.solicita.entity.User;
 import com.solicita.enums.RequestStatus;
+import com.solicita.exception.ResourceNotFoundException;
 import com.solicita.repository.RequestRepository;
 import com.solicita.repository.UserRepository;
 
@@ -35,7 +36,7 @@ public class RequestServiceImpl implements RequestService {
             String username) {
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         Request request = new Request();
 
@@ -65,7 +66,7 @@ public class RequestServiceImpl implements RequestService {
     public RequestResponseDTO findById(Long id) {
 
         Request request = requestRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Solicitação não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
         return toResponse(request);
     }
@@ -76,7 +77,7 @@ public class RequestServiceImpl implements RequestService {
             UpdateRequestDTO dto) {
 
         Request request = requestRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Solicitação não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
         if (request.getStatus() != RequestStatus.ABERTO) {
             throw new IllegalStateException(
@@ -97,7 +98,7 @@ public class RequestServiceImpl implements RequestService {
             UpdateRequestStatusDTO dto) {
 
         Request request = requestRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Solicitação não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
         request.setStatus(dto.status());
         request.setUpdatedAt(Instant.now());
@@ -109,7 +110,7 @@ public class RequestServiceImpl implements RequestService {
     public void delete(Long id) {
 
         Request request = requestRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Solicitação não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 
         if (request.getStatus() != RequestStatus.ABERTO) {
             throw new IllegalStateException(
