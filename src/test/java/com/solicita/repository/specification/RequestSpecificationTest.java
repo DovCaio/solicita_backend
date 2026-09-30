@@ -25,6 +25,7 @@ import com.solicita.enums.Category;
 import com.solicita.enums.RequestStatus;
 import com.solicita.repository.RequestRepository;
 import com.solicita.repository.UserRepository;
+import com.solicita.specification.RequestSpecification;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

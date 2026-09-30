@@ -1,4 +1,4 @@
-package com.solicita.repository.specification;
+package com.solicita.specification;
 
 import java.time.Instant;
 import java.time.ZoneOffset;

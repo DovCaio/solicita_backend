@@ -20,7 +20,7 @@ import com.solicita.exception.ResourceNotFoundException;
 import com.solicita.exception.ToManyResourceRequisitionException;
 import com.solicita.repository.RequestRepository;
 import com.solicita.repository.UserRepository;
-import com.solicita.repository.specification.RequestSpecification;
+import com.solicita.specification.RequestSpecification;
 
 import org.springframework.data.domain.Pageable;
 
