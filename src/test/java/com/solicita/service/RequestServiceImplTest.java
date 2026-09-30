@@ -35,10 +35,12 @@ import org.springframework.data.jpa.domain.Specification;
 import com.solicita.dto.request.CreateRequestDTO;
 import com.solicita.dto.request.RequestFilterDTO;
 import com.solicita.dto.request.RequestResponseDTO;
+import com.solicita.dto.request.UpdateRequestDTO;
 import com.solicita.entity.Request;
 import com.solicita.entity.User;
 import com.solicita.enums.Category;
 import com.solicita.enums.RequestStatus;
+import com.solicita.exception.BusinessException;
 import com.solicita.exception.ResourceNotFoundException;
 import com.solicita.exception.ToManyResourceRequisitionException;
 import com.solicita.repository.RequestRepository;
@@ -259,6 +261,165 @@ public class RequestServiceImplTest {
                 verify(requestRepository).findAll(
                                 any(Specification.class),
                                 eq(PageRequest.of(0, 10)));
+        }
+
+        @Test
+        void shouldFindRequestByIdSuccessfully() {
+
+                // Arrange
+                Long id = 1L;
+
+                User user = new User();
+                user.setId(1L);
+                user.setUsername("admin");
+
+                Request request = new Request();
+                request.setId(id);
+                request.setTitle("Computador não liga");
+                request.setDescription("O computador do setor não está iniciando.");
+                request.setCategory(Category.TI);
+                request.setStatus(RequestStatus.ABERTO);
+                request.setCreatedAt(Instant.now());
+                request.setUser(user);
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.of(request));
+
+                // Act
+                RequestResponseDTO response = requestService.findById(id);
+
+                // Assert
+                assertNotNull(response);
+                assertEquals(id, response.id());
+                assertEquals(request.getTitle(), response.title());
+                assertEquals(request.getDescription(), response.description());
+                assertEquals(request.getCategory(), response.category());
+                assertEquals(request.getStatus(), response.status());
+                assertEquals(request.getCreatedAt(), response.createdAt());
+                assertEquals(user.getId(), response.userId());
+                assertEquals(user.getUsername(), response.username());
+
+                verify(requestRepository).findById(id);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenRequestDoesNotExist() {
+
+                // Arrange
+                Long id = 999L;
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.empty());
+
+                // Act + Assert
+                assertThrows(
+                                ResourceNotFoundException.class,
+                                () -> requestService.findById(id));
+
+                verify(requestRepository).findById(id);
+        }
+
+        @Test
+        void shouldUpdateRequestSuccessfully() {
+
+                // Arrange
+                Long id = 1L;
+
+                User user = new User();
+                user.setId(1L);
+                user.setUsername("admin");
+
+                Request request = new Request();
+                request.setId(id);
+                request.setTitle("Computador não liga");
+                request.setDescription("Descrição antiga");
+                request.setCategory(Category.TI);
+                request.setStatus(RequestStatus.ABERTO);
+                request.setCreatedAt(Instant.now());
+                request.setUser(user);
+
+                UpdateRequestDTO dto = new UpdateRequestDTO(
+                                "Computador apresenta erro",
+                                "Nova descrição da solicitação.",
+                                Category.INFRAESTRUTURA);
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.of(request));
+
+                // Act
+                RequestResponseDTO response = requestService.update(id, dto);
+
+                // Assert
+                assertEquals(dto.title(), request.getTitle());
+                assertEquals(dto.description(), request.getDescription());
+                assertEquals(dto.category(), request.getCategory());
+                assertNotNull(request.getUpdatedAt());
+
+                assertEquals(id, response.id());
+                assertEquals(dto.title(), response.title());
+                assertEquals(dto.description(), response.description());
+                assertEquals(dto.category(), response.category());
+                assertEquals(RequestStatus.ABERTO, response.status());
+                assertEquals(user.getUsername(), response.username());
+
+                verify(requestRepository).findById(id);
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = RequestStatus.class, names = { "EM_ATENDIMENTO", "CONCLUIDO" })
+        void shouldNotUpdateRequestWhenStatusIsNotOpen(RequestStatus status) {
+
+                // Arrange
+                Long id = 1L;
+
+                Request request = new Request();
+                request.setId(id);
+                request.setTitle("Computador não liga");
+                request.setDescription("Descrição");
+                request.setCategory(Category.TI);
+                request.setStatus(status);
+
+                UpdateRequestDTO dto = new UpdateRequestDTO(
+                                "Novo título",
+                                "Nova descrição",
+                                Category.RH);
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.of(request));
+
+                // Act + Assert
+                assertThrows(
+                                BusinessException.class,
+                                () -> requestService.update(id, dto));
+
+                assertEquals("Computador não liga", request.getTitle());
+                assertEquals("Descrição", request.getDescription());
+                assertEquals(Category.TI, request.getCategory());
+                assertEquals(status, request.getStatus());
+
+                verify(requestRepository).findById(id);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenRequestDoesNotExistForUpdateFeature() {
+
+                // Arrange
+                Long id = 999L;
+
+                UpdateRequestDTO dto = new UpdateRequestDTO(
+                                "Novo título",
+                                "Nova descrição",
+                                Category.TI);
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.empty());
+
+                // Act + Assert
+                assertThrows(
+                                ResourceNotFoundException.class,
+                                () -> requestService.update(id, dto));
+
+                verify(requestRepository).findById(id);
         }
 
 }
