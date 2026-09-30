@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -479,6 +480,74 @@ public class RequestServiceImplTest {
                                 () -> requestService.updateStatus(id, dto));
 
                 verify(requestRepository).findById(id);
+        }
+
+        @Test
+        void shouldDeleteRequestSuccessfullyWhenStatusIsOpen() {
+
+                // Arrange
+                Long id = 1L;
+
+                Request request = new Request();
+                request.setId(id);
+                request.setTitle("Computador não liga");
+                request.setDescription("Descrição");
+                request.setCategory(Category.TI);
+                request.setStatus(RequestStatus.ABERTO);
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.of(request));
+
+                // Act
+                requestService.delete(id);
+
+                // Assert
+                verify(requestRepository).findById(id);
+                verify(requestRepository).delete(request);
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = RequestStatus.class, names = { "EM_ATENDIMENTO", "CONCLUIDO" })
+        void shouldNotDeleteRequestWhenStatusIsNotOpen(RequestStatus status) {
+
+                // Arrange
+                Long id = 1L;
+
+                Request request = new Request();
+                request.setId(id);
+                request.setTitle("Computador não liga");
+                request.setDescription("Descrição");
+                request.setCategory(Category.TI);
+                request.setStatus(status);
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.of(request));
+
+                // Act + Assert
+                assertThrows(
+                                BusinessException.class,
+                                () -> requestService.delete(id));
+
+                verify(requestRepository).findById(id);
+                verify(requestRepository, never()).delete(any(Request.class));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenRequestDoesNotExistOnDelete() {
+
+                // Arrange
+                Long id = 999L;
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.empty());
+
+                // Act + Assert
+                assertThrows(
+                                ResourceNotFoundException.class,
+                                () -> requestService.delete(id));
+
+                verify(requestRepository).findById(id);
+                verify(requestRepository, never()).delete(any(Request.class));
         }
 
 }
