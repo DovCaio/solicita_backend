@@ -36,6 +36,7 @@ import com.solicita.dto.request.CreateRequestDTO;
 import com.solicita.dto.request.RequestFilterDTO;
 import com.solicita.dto.request.RequestResponseDTO;
 import com.solicita.dto.request.UpdateRequestDTO;
+import com.solicita.dto.request.UpdateRequestStatusDTO;
 import com.solicita.entity.Request;
 import com.solicita.entity.User;
 import com.solicita.enums.Category;
@@ -418,6 +419,64 @@ public class RequestServiceImplTest {
                 assertThrows(
                                 ResourceNotFoundException.class,
                                 () -> requestService.update(id, dto));
+
+                verify(requestRepository).findById(id);
+        }
+
+        @ParameterizedTest
+        @EnumSource(RequestStatus.class)
+        void shouldUpdateRequestStatusSuccessfully(RequestStatus status) {
+
+                // Arrange
+                Long id = 1L;
+
+                User user = new User();
+                user.setId(1L);
+                user.setUsername("admin");
+
+                Request request = new Request();
+                request.setId(id);
+                request.setTitle("Computador não liga");
+                request.setDescription("Descrição");
+                request.setCategory(Category.TI);
+                request.setStatus(RequestStatus.ABERTO);
+                request.setCreatedAt(Instant.now());
+                request.setUser(user);
+
+                UpdateRequestStatusDTO dto = new UpdateRequestStatusDTO(status);
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.of(request));
+
+                // Act
+                RequestResponseDTO response = requestService.updateStatus(id, dto);
+
+                // Assert
+                assertEquals(status, request.getStatus());
+                assertNotNull(request.getUpdatedAt());
+
+                assertEquals(id, response.id());
+                assertEquals(status, response.status());
+                assertEquals(user.getUsername(), response.username());
+
+                verify(requestRepository).findById(id);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenRequestDoesNotExistOnUpdateStatus() {
+
+                // Arrange
+                Long id = 999L;
+
+                UpdateRequestStatusDTO dto = new UpdateRequestStatusDTO(RequestStatus.CONCLUIDO);
+
+                when(requestRepository.findById(id))
+                                .thenReturn(Optional.empty());
+
+                // Act + Assert
+                assertThrows(
+                                ResourceNotFoundException.class,
+                                () -> requestService.updateStatus(id, dto));
 
                 verify(requestRepository).findById(id);
         }
