@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.solicita.dto.dashboard.DashboardResponseDTO;
 import com.solicita.service.DashboardService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,11 @@ public class DashboardController {
     }
 
     @GetMapping
+    @Operation(summary = "Consultar dashboard", description = "Retorna os totais de solicitações agrupados por status.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Indicadores retornados com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Usuário não autenticado")
+    })
     public ResponseEntity<DashboardResponseDTO> getDashboard() {
         return ResponseEntity.ok(dashboardService.getDashboard());
     }
