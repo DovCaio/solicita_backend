@@ -10,32 +10,32 @@ import com.solicita.repository.RequestRepository;
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
-    private final RequestRepository requestRepository;
+        private final RequestRepository requestRepository;
 
-    public DashboardServiceImpl(RequestRepository requestRepository) {
-        this.requestRepository = requestRepository;
-    }
+        public DashboardServiceImpl(RequestRepository requestRepository) {
+                this.requestRepository = requestRepository;
+        }
 
-    @Override
-    @Transactional(readOnly = true)
-    public DashboardResponseDTO getDashboard() {
+        @Override
+        @Transactional(readOnly = true)
+        public DashboardResponseDTO getDashboard() {
 
-        long total = requestRepository.count();
+                long total = requestRepository.count();
 
-        long open = requestRepository.countByStatus(
-                RequestStatus.ABERTO);
+                long open = requestRepository.countByStatus(
+                                RequestStatus.ABERTO);
 
-        long inService = requestRepository.countByStatus(
-                RequestStatus.EM_ATENDIMENTO);
+                long inService = requestRepository.countByStatus(
+                                RequestStatus.EM_ATENDIMENTO);
 
-        long completed = requestRepository.countByStatus(
-                RequestStatus.CONCLUIDO);
+                long completed = requestRepository.countByStatus(
+                                RequestStatus.CONCLUIDO);
 
-        return new DashboardResponseDTO(
-                total,
-                open,
-                inService,
-                completed);
-    }
+                return new DashboardResponseDTO(
+                                total,
+                                open,
+                                inService,
+                                completed);
+        }
 
 }
