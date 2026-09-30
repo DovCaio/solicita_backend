@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.solicita.dto.auth.LoginRequestDTO;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Autenticação", description = "Operações de autenticação e controle de sessão")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;

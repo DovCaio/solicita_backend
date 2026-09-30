@@ -3,6 +3,7 @@ package com.solicita.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,9 +28,15 @@ import com.solicita.enums.RequestStatus;
 import com.solicita.service.RequestService;
 
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/requests")
+@Tag(name = "Solicitações", description = "Operações de gerenciamento de solicitações")
 public class RequestController {
 
     private final RequestService requestService;
@@ -39,6 +46,12 @@ public class RequestController {
     }
 
     @PostMapping
+    @Operation(summary = "Criar solicitação", description = "Cria uma nova solicitação associada ao usuário autenticado.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Solicitação criada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados da solicitação inválidos"),
+            @ApiResponse(responseCode = "403", description = "Usuário não autenticado")
+    })
     public ResponseEntity<RequestResponseDTO> create(
             @Valid @RequestBody CreateRequestDTO dto,
             Authentication authentication) {
@@ -52,14 +65,26 @@ public class RequestController {
     }
 
     @GetMapping
+    @Operation(summary = "Listar solicitações", description = "Lista as solicitações aplicando filtros opcionais e paginação.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Solicitações encontradas"),
+            @ApiResponse(responseCode = "400", description = "Parâmetros de consulta inválidos"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
+    })
     public ResponseEntity<List<RequestResponseDTO>> findAll(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) Category category,
-            @RequestParam(required = false) RequestStatus status,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "Texto para busca no título") @RequestParam(required = false) String title,
+
+            @Parameter(description = "Categoria da solicitação") @RequestParam(required = false) Category category,
+
+            @Parameter(description = "Status da solicitação") @RequestParam(required = false) RequestStatus status,
+
+            @Parameter(description = "Data inicial do período") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+
+            @Parameter(description = "Data final do período") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+
+            @Parameter(description = "Número da página") @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Quantidade de registros por página") @RequestParam(defaultValue = "10") int size) {
 
         RequestFilterDTO filter = new RequestFilterDTO(
                 title,
@@ -73,27 +98,53 @@ public class RequestController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Retorna uma solicitação", description = "Retorna uma solicitação.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Solicitação encontrada"),
+            @ApiResponse(responseCode = "404", description = "Solicitação não encontrada"),
+    })
     public ResponseEntity<RequestResponseDTO> findById(
-            @PathVariable Long id) {
+            @Parameter(description = "ID da solicitação", example = "1") @PathVariable Long id) {
         return ResponseEntity.ok(requestService.findById(id));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Altera uma solicitação", description = "Altera a solicitação, caso ela esteja como aberta.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Solicitação alterada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Solicitação não encontrada"),
+            @ApiResponse(responseCode = "409", description = "Solicitação não está com o status de aberta"),
+    })
     public ResponseEntity<RequestResponseDTO> update(
-            @PathVariable Long id,
+            @Parameter(description = "ID da solicitação", example = "1") @PathVariable Long id,
             @Valid @RequestBody UpdateRequestDTO dto) {
         return ResponseEntity.ok(requestService.update(id, dto));
     }
 
     @PatchMapping("/{id}/status")
+    @Operation(summary = "Alterar status da solicitação", description = "Altera o status de uma solicitação existente.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Status alterado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Solicitação não encontrada"),
+            @ApiResponse(responseCode = "400", description = "Status inválido"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
+    })
     public ResponseEntity<RequestResponseDTO> updateStatus(
-            @PathVariable Long id,
+            @Parameter(description = "ID da solicitação", example = "1") @PathVariable Long id,
+
             @Valid @RequestBody UpdateRequestStatusDTO dto) {
         return ResponseEntity.ok(requestService.updateStatus(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @Operation(summary = "Deletar solicitação", description = "Deleta a solicitação, caso ela esteja como aberta.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Solicitação deletada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Solicitação não encontrada"),
+            @ApiResponse(responseCode = "409", description = "Solicitação não está com o status de aberta"),
+    })
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID da solicitação", example = "1") @PathVariable Long id) {
 
         requestService.delete(id);
 

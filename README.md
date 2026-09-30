@@ -63,7 +63,7 @@ config — concentra configurações gerais da aplicação, como inicialização
 
 ## Decisões técnicas
 
-Java 21 + Spring Boot — escolhidos para aproveitar recursos atuais da plataforma Java e o ecossistema do Spring para desenvolvimento de APIs REST.
+Java 21 + Spring Boot — escolhidos para aproveitar recursos atuais da plataforma Java e o ecossistema do Spring para desenvolvimento de APIs REST. //melhorar tudo isso daqui, ver no manual como
 
 Arquitetura em camadas — foi adotada uma separação entre controllers, services e repositories, mantendo as responsabilidades bem definidas sem adicionar abstrações desnecessárias para o escopo da aplicação.
 
