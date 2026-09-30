@@ -40,7 +40,14 @@ Sistema web para gerenciamento de solicitações internas.
 
 ## Testes
 
-...
+### Os testes unitários dos serviços validam:
+
+- regras de criação e associação do usuário;
+- consulta e tratamento de recursos inexistentes;
+- regras de edição e exclusão;
+- alteração de status;
+- paginação e limite de requisições;
+- mapeamento das entidades para DTOs.
 
 ## Screenshots
 
