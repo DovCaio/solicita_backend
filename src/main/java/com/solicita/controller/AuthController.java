@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.solicita.dto.auth.LoginRequestDTO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,38 +28,44 @@ import jakarta.validation.Valid;
 @Tag(name = "Autenticação", description = "Operações de autenticação e controle de sessão")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
+        private final AuthenticationManager authenticationManager;
 
-    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+        private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
-    public AuthController(
-            AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+        public AuthController(
+                        AuthenticationManager authenticationManager) {
+                this.authenticationManager = authenticationManager;
+        }
 
-    @PostMapping("/login")
-    public ResponseEntity<Void> login(
-            @Valid @RequestBody LoginRequestDTO dto,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+        @PostMapping("/login")
+        @Operation(summary = "Realizar login", description = "Autentica o usuário e cria uma sessão autenticada.")
+        @ApiResponses({
+                        @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
+                        @ApiResponse(responseCode = "403", description = "Usuário ou senha inválidos"),
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        dto.username(),
-                        dto.password()));
+        })
+        public ResponseEntity<Void> login(
+                        @Valid @RequestBody LoginRequestDTO dto,
+                        HttpServletRequest request,
+                        HttpServletResponse response) {
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
+                Authentication authentication = authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(
+                                                dto.username(),
+                                                dto.password()));
 
-        context.setAuthentication(authentication);
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
 
-        SecurityContextHolder.setContext(context);
+                context.setAuthentication(authentication);
 
-        securityContextRepository.saveContext(
-                context,
-                request,
-                response);
+                SecurityContextHolder.setContext(context);
 
-        return ResponseEntity.ok().build();
-    }
+                securityContextRepository.saveContext(
+                                context,
+                                request,
+                                response);
+
+                return ResponseEntity.ok().build();
+        }
 
 }
