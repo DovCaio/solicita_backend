@@ -1,0 +1,31 @@
+name: Backend CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main", "development"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Run tests
+        run: mvn test
+
+      - name: Build application
+        run: mvn package -DskipTests
+
+      - name: Build Docker image
+        run: docker build -t solicita-backend .
