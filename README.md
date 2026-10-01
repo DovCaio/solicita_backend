@@ -91,6 +91,8 @@ Sem Lombok — optou-se por não utilizar Lombok, mantendo as entidades JPA e de
 
 Sem Command Pattern — o padrão Command não foi utilizado porque as operações atuais possuem complexidade suficiente para serem representadas diretamente pelos métodos da camada de serviço. Adicionar uma camada de Commands neste momento aumentaria a complexidade sem um benefício concreto.
 
+Swagger
+
 ## Testes
 
 ### Estratégia de testes
@@ -122,9 +124,51 @@ São contemplados cenários como:
 - funcionamento do dashboard;
 - persistência e consulta dos dados no PostgreSQL.
 
-## Screenshots
+## Demostração da API
 
-...
+### Tentando usar sem logar
+
+![Uso sem logar](screenshot/01-forbiden_when_try_use_unloged.png)
+
+### Login
+
+![Logando](screenshot/02-login.png)
+
+### Cria uma requisição para o TI
+
+![Criando Requsição TI](screenshot/03-create_request1.png)
+
+### Cria uma requisição para o RH
+
+![Criando Requsição RH](screenshot/04-create_request2.png)
+
+### Cria uma requisição para o Compras
+
+![Criando Requsição Compras](screenshot/05-create_request3.png)
+
+### Demostrando a persistência no banco de dados
+
+![Demonstrando persistência](screenshot/06-data_on_db.png)
+
+### Recuperar todos sem filtro
+
+![Recuperando sem filtros](screenshot/07-getall_without_filters.png)
+
+### Recuperar todos com filtro
+
+![Recuperando com filtros](screenshot/08-getall_with_filters.png)
+
+### Altera o status da requisição
+
+![Alterando status](screenshot/09-update_status.png)
+
+### Dashboard
+
+![Dashboard](screenshot/10-dashboard.png)
+
+### Tratamento de exceções
+
+![Tratamento de exceções](screenshot/11-error_handler.png)
 
 ## Tabela de dados
 
