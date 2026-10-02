@@ -18,7 +18,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  backend:
+  solicita:
     build:
       context: .
       dockerfile: Dockerfile
@@ -30,6 +30,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/solicita
       SPRING_DATASOURCE_USERNAME: solicita
       SPRING_DATASOURCE_PASSWORD: solicita
+      CORS_ALLOWED_ORIGIN: http://localhost:3002
     ports:
       - "8080:8080"
     networks:
