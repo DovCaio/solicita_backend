@@ -5,6 +5,6 @@ import com.solicita.enums.RequestStatus;
 import jakarta.validation.constraints.NotNull;
 
 public record UpdateRequestStatusDTO(
-        @NotNull RequestStatus status) {
+                @NotNull(message = "O status não deve ser vazio") RequestStatus status) {
 
 }

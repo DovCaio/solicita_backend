@@ -7,10 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UpdateRequestDTO(
-        @NotBlank @Size(max = 150) String title,
+                @NotBlank(message = "O titulo não deve ser vazio.") @Size(max = 150) String title,
 
-        @NotBlank String description,
+                @NotBlank(message = "A descrição não deve ser vazia.") String description,
 
-        @NotNull Category category) {
+                @NotNull(message = "A categoria não pode ser vazia.") Category category) {
 
 }
