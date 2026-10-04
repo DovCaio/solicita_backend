@@ -338,6 +338,153 @@ public class RequestControllerIntegrationTest {
                                 .isEmpty();
         }
 
+        @Test
+        void shouldNotUpdateRequestWhenStatusIsInService() throws Exception {
+                MockHttpSession session = login();
+
+                User user = userRepository.findByUsername("admin")
+                                .orElseThrow();
+
+                Request request = new Request();
+                request.setTitle("Computador não liga");
+                request.setDescription("Descrição");
+                request.setCategory(Category.TI);
+                request.setStatus(RequestStatus.EM_ATENDIMENTO);
+                request.setCreatedAt(Instant.now());
+                request.setUser(user);
+
+                Long reqId = requestRepository.save(request).getId();
+
+                mockMvc.perform(put("/api/requests/{id}", reqId)
+                                .session(session)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                                {
+                                                    "title": "Novo título",
+                                                    "description": "Nova descrição",
+                                                    "category": "RH"
+                                                }
+                                                """))
+                                .andExpect(status().isConflict());
+
+                Request reqForVerification = requestRepository.findById(reqId)
+                                .orElseThrow();
+
+                assertThat(reqForVerification.getTitle())
+                                .isEqualTo("Computador não liga");
+
+                assertThat(reqForVerification.getDescription())
+                                .isEqualTo("Descrição");
+
+                assertThat(reqForVerification.getCategory())
+                                .isEqualTo(Category.TI);
+
+                assertThat(reqForVerification.getStatus())
+                                .isEqualTo(RequestStatus.EM_ATENDIMENTO);
+        }
+
+        @Test
+        void shouldNotUpdateRequestWhenStatusIsCompleted() throws Exception {
+                MockHttpSession session = login();
+
+                User user = userRepository.findByUsername("admin")
+                                .orElseThrow();
+
+                Request request = new Request();
+                request.setTitle("Computador não liga");
+                request.setDescription("Descrição");
+                request.setCategory(Category.TI);
+                request.setStatus(RequestStatus.CONCLUIDO);
+                request.setCreatedAt(Instant.now());
+                request.setUser(user);
+
+                Long reqId = requestRepository.save(request).getId();
+
+                mockMvc.perform(put("/api/requests/{id}", reqId)
+                                .session(session)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                                {
+                                                    "title": "Novo título",
+                                                    "description": "Nova descrição",
+                                                    "category": "RH"
+                                                }
+                                                """))
+                                .andExpect(status().isConflict());
+
+                Request reqForVerification = requestRepository.findById(reqId)
+                                .orElseThrow();
+
+                assertThat(reqForVerification.getTitle())
+                                .isEqualTo("Computador não liga");
+
+                assertThat(reqForVerification.getDescription())
+                                .isEqualTo("Descrição");
+
+                assertThat(reqForVerification.getCategory())
+                                .isEqualTo(Category.TI);
+
+                assertThat(reqForVerification.getStatus())
+                                .isEqualTo(RequestStatus.CONCLUIDO);
+        }
+
+        @Test
+        void shouldNotDeleteRequestWhenStatusIsInService() throws Exception {
+                MockHttpSession session = login();
+
+                User user = userRepository.findByUsername("admin")
+                                .orElseThrow();
+
+                Request request = new Request();
+                request.setTitle("Computador não liga");
+                request.setDescription("Descrição");
+                request.setCategory(Category.TI);
+                request.setStatus(RequestStatus.EM_ATENDIMENTO);
+                request.setCreatedAt(Instant.now());
+                request.setUser(user);
+
+                Long reqId = requestRepository.save(request).getId();
+
+                mockMvc.perform(delete("/api/requests/{id}", request.getId())
+                                .session(session)
+                                .with(csrf()))
+                                .andExpect(status().isConflict());
+
+                Boolean exists = requestRepository.existsById(reqId);
+
+                assertThat(exists).isTrue();
+                // verifica que os dados originais continuam iguais
+        }
+
+        @Test
+        void shouldNotDeleteRequestWhenStatusIsCompleted() throws Exception {
+                MockHttpSession session = login();
+
+                User user = userRepository.findByUsername("admin")
+                                .orElseThrow();
+
+                Request request = new Request();
+                request.setTitle("Computador não liga");
+                request.setDescription("Descrição");
+                request.setCategory(Category.TI);
+                request.setStatus(RequestStatus.EM_ATENDIMENTO);
+                request.setCreatedAt(Instant.now());
+                request.setUser(user);
+
+                Long reqId = requestRepository.save(request).getId();
+
+                mockMvc.perform(delete("/api/requests/{id}", request.getId())
+                                .session(session)
+                                .with(csrf()))
+                                .andExpect(status().isConflict());
+                Boolean exists = requestRepository.existsById(reqId);
+
+                assertThat(exists).isTrue();
+
+        }
+
         private Request createRequest(
                         String title,
                         Category category,
